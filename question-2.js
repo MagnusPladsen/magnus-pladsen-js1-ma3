@@ -15,7 +15,6 @@
 const apiKey = "bdf18b4af36049e9872643a5b35c39fc";
 const url =
   "https://api.rawg.io/api/games?dates=2019-01-01,2019-12-31&ordering=-rating&key=";
-const games = [];
 const header = document.querySelector(".header");
 const resultContainer = document.querySelector(".results");
 
@@ -26,34 +25,28 @@ const fetchGames = async () => {
     const response = await fetch(url + apiKey);
     const results = await response.json();
     let data = results.results;
-    console.log(data)
+    console.log(data);
     return data;
   } catch (error) {
     console.log(error);
+    header.innerHTML = "<h2>Something went wrong!</h2>";
   }
 };
 
-const displayGames = async (games) => {
+const displayGames = async () => {
   fetchGames()
+    .then((data) => {
+      header.innerHTML = "<h2>Games:</h2>";
+      return data
+    })
     .then((data) => {
       for (let i = 0; i < 8; i++) {
         const name = data[i].name;
         const rating = data[i].rating;
         const tags = data[i].tags.length;
-        games.push({ name, rating, tags });
-        header.innerHTML = "<h2>Games:</h2>";
+        resultContainer.innerHTML += `<div class="game"><h3>${name}</h3><p>Rating: ${rating}</p><p>Tags: ${tags}</p></div>`;
       }
-    })
-    .then(() => {
-      games.forEach((game) => {
-        resultContainer.innerHTML += `<div class="game">
-            <h3 class="">${game.name}</h3>
-            <p>Rating: ${game.rating}</p>
-            <p>Tags: ${game.tags}</p>
-        </div>`;
-      });
     });
 };
 
-
-displayGames(games);
+displayGames();
